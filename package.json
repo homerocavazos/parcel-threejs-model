@@ -1,0 +1,23 @@
+{
+  "name": "parcel",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.html",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "start": "parcel src/*.html --open 'Firefox Developer Edition'",
+    "build": "parcel build src/index.html --dist-dir build --public-url ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.0.0-rc.0",
+    "parcel": "^2.0.0-rc.0",
+    "posthtml-doctype": "^1.1.1",
+    "posthtml-include": "^1.7.2"
+  },
+  "dependencies": {
+    "three": "^0.134.0"
+  }
+}
