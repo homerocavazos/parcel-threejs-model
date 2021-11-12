@@ -1,0 +1,17 @@
+node_modules/
+.cache/
+.parcel-cache/
+dist/**/*.css
+build/**/*.css
+dist/**/*.js
+build/**/*.js
+dist/**/*.html
+build/**/*.html
+dist/**/*.js.map
+build/**/*.js.map
+dist/**/*.css.map
+build/**/*.css.map
+.env
+.DS_Store
+coverage/
+.vscode/

@@ -12,16 +12,48 @@ import { WEBGL } from "three/examples/jsm/WebGL";
 
 // ThreeJS always needs these three
 // - Scene, Camera and Render
+let scene, camera, renderer, light, controls, loader;
 
-const scene = new Scene();
-const camera = new PerspectiveCamera(
-  75, // field view
-  window.innerWidth / window.innerHeight, // aspect ratio
-  0.1, // near
-  1000 // far
-);
+function init() {
+  scene = new Scene();
+  camera = new PerspectiveCamera(
+    75, // field view
+    window.innerWidth / window.innerHeight, // aspect ratio
+    0.1, // near
+    1000 // far
+  );
+  camera.position.z = 5;
 
-const loader = new GLTFLoader();
+  renderer = new WebGLRenderer({ antialias: true });
+
+  // You need light to light up the model
+  light = new DirectionalLight(0xffffff, 1);
+  light.position.set(2, 2, 5);
+  scene.add(light);
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.update();
+
+  loader = new GLTFLoader();
+  loader.load(
+    "models/scene.gltf",
+    function (gltf) {
+      console.log(gltf);
+      const model = gltf.scene;
+      model.scale.set(0.01, 0.01, 0.01);
+      scene.add(model);
+    },
+    function (xhr) {
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+    },
+    function (error) {
+      console.log(error);
+    }
+  );
+} // init
 
 /*
   YOU NEED!
@@ -30,37 +62,6 @@ const loader = new GLTFLoader();
 
 */
 
-loader.load(
-  "models/scene.gltf",
-  function (gltf) {
-    console.log(gltf);
-    const car = gltf.scene;
-    car.scale.set(0.01, 0.01, 0.01);
-    scene.add(car);
-  },
-  function (xhr) {
-    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-  },
-  function (error) {
-    console.log(error);
-  }
-);
-
-// You need light to light up the model
-const light = new DirectionalLight(0xffffff, 1);
-light.position.set(2, 2, 5);
-scene.add(light);
-
-const renderer = new WebGLRenderer();
-
-const controls = new OrbitControls(camera, renderer.domElement);
-
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-camera.position.z = 5;
-controls.update();
-
 // need for adding to scene
 function animate() {
   requestAnimationFrame(animate);
@@ -68,9 +69,17 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
 if (WEBGL.isWebGLAvailable()) {
   // Initiate function or other initializations here
+  init();
   animate();
+  window.addEventListener("resize", onWindowResize, false);
 } else {
   const warning = WEBGL.getWebGLErrorMessage();
   document.getElementById("container").appendChild(warning);
