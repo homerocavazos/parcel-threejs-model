@@ -9,10 +9,15 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 import { WEBGL } from "three/examples/jsm/WebGL";
+import { AnimationMixer } from "three";
+import { Clock } from "three";
 
 // ThreeJS always needs these three
 // - Scene, Camera and Render
-let scene, camera, renderer, light, controls, loader;
+let scene, camera, renderer, light, controls;
+
+let mixer;
+const clock = new Clock();
 
 function init() {
   scene = new Scene();
@@ -37,7 +42,7 @@ function init() {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.update();
 
-  loader = new GLTFLoader();
+  const loader = new GLTFLoader();
   loader.load(
     "models/scene.gltf",
     function (gltf) {
@@ -45,6 +50,10 @@ function init() {
       const model = gltf.scene;
       model.scale.set(0.01, 0.01, 0.01);
       scene.add(model);
+
+      mixer = new AnimationMixer(model);
+      mixer.clipAction(gltf.animations[0]).play();
+      animate();
     },
     function (xhr) {
       console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
@@ -65,6 +74,9 @@ function init() {
 // need for adding to scene
 function animate() {
   requestAnimationFrame(animate);
+
+  const delta = clock.getDelta();
+  mixer.update(delta);
   controls.update(); // lets you drag around
   renderer.render(scene, camera);
 }
